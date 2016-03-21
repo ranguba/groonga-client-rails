@@ -30,7 +30,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'mongoid', '~> 5.1.0'
+gem 'mongoid', '~> 5.1.1'
 
 gem 'groonga-client-rails', path: '../../../'
 
