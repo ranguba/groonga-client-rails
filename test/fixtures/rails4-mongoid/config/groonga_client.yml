@@ -1,0 +1,22 @@
+default: &default
+  protocol: http
+  # protocol: https
+  host: 127.0.0.1
+  port: 10041
+  # user: alice
+  # password: secret
+  read_timeout: -1
+  # read_timeout: 3
+  backend: synchronous
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  port: 20041
+
+production:
+  <<: *default
+  host: 127.0.0.1
+  read_timeout: 10
