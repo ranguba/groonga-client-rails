@@ -1,3 +1,10 @@
+PATH
+  remote: ../../../
+  specs:
+    groonga-client-rails (1.0.0)
+      groonga-client
+      rails
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -60,6 +67,12 @@ GEM
       railties (>= 3.0.0)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
+    gqtp (1.0.6)
+    groonga-client (0.1.9)
+      gqtp (>= 1.0.4)
+      groonga-command (>= 1.0.8)
+    groonga-command (1.1.7)
+      json
     i18n (0.7.0)
     jbuilder (2.4.1)
       activesupport (>= 3.0.0, < 5.1)
@@ -158,6 +171,7 @@ DEPENDENCIES
   byebug
   coffee-rails (~> 4.1.0)
   factory_girl_rails
+  groonga-client-rails!
   jbuilder (~> 2.0)
   jquery-rails
   mongoid (~> 5.1.0)
