@@ -174,7 +174,7 @@ DEPENDENCIES
   groonga-client-rails!
   jbuilder (~> 2.0)
   jquery-rails
-  mongoid (~> 5.1.0)
+  mongoid (~> 5.1.1)
   rails (= 4.2.6)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
