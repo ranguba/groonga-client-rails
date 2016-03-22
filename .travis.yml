@@ -6,4 +6,6 @@ rvm:
   - 2.2
   - 2.3.0
 before_install:
+  - curl --silent --location https://github.com/groonga/groonga/raw/master/data/travis/setup.sh | sh
+  - sudo apt-get -qq -y install groonga-tokenizer-mecab
   - gem update bundler
