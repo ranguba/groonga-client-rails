@@ -122,7 +122,7 @@ module Groonga
       def destroy(source)
         Client.open do |client|
           client.delete(table: self.class.schema.table,
-                        key: source_key)
+                        key: source_key(source))
         end
       end
 
