@@ -20,6 +20,12 @@ module Groonga
   class Client
     # @private
     class Railtie < ::Rails::Railtie
+      initializer "groonga-client.eager_load" do |app|
+        app.paths.add("app/searchers",
+                      eager_load: true,
+                      glob: "**/*_searcher.rb")
+      end
+
       initializer "groonga-client.configure" do |app|
         config_name = :groonga_client
         config_path = Pathname(app.paths["config"].existent.first)
