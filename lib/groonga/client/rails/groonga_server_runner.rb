@@ -23,34 +23,50 @@ module Groonga
       class GroongaServerRunner
         def initialize
           @pid = nil
+          @using_running_server = false
           @url = build_url
           @groonga = find_groonga
           @tmp_dir = nil
         end
 
         def run
-          return if @groonga.nil?
-          @tmp_dir = create_tmp_dir
-          db_path = @tmp_dir + "db"
-          @pid = spawn(@groonga,
-                       "--port", @url.port.to_s,
-                       "--log-path", (@tmp_dir + "groonga.log").to_s,
-                       "--query-log-path", (@tmp_dir + "query.log").to_s,
-                       "--protocol", "http",
-                       "-s",
-                       "-n", db_path.to_s)
-          wait_groonga_ready
+          if groonga_server_running?
+            @using_running_server = true
+          else
+            return if @groonga.nil?
+            @tmp_dir = create_tmp_dir
+            db_path = @tmp_dir + "db"
+            @pid = spawn(@groonga,
+                         "--port", @url.port.to_s,
+                         "--log-path", (@tmp_dir + "groonga.log").to_s,
+                         "--query-log-path", (@tmp_dir + "query.log").to_s,
+                         "--protocol", "http",
+                         "-s",
+                         "-n", db_path.to_s)
+            wait_groonga_ready
+          end
+          sync_schema
         end
 
         def stop
-          if @pid
+          if @using_running_server
             Groonga::Client.open do |client|
-              client.shutdown
+              schema = client.schema
+              schema.tables.each do |name, _|
+                client.delete(table: name,
+                              filter: "true")
+              end
             end
-            wait_groonga_shutdown
-          end
-          if @tmp_dir
-            FileUtils.rm_rf(@tmp_dir)
+          else
+            if @pid
+              Groonga::Client.open do |client|
+                client.shutdown
+              end
+              wait_groonga_shutdown
+            end
+            if @tmp_dir
+              FileUtils.rm_rf(@tmp_dir)
+            end
           end
         end
 
@@ -65,6 +81,24 @@ module Groonga
             url = URI("http://#{host}:#{port}#{path}")
           end
           url
+        end
+
+        def groonga_server_running?
+          begin
+            TCPSocket.open(@url.host, @url.port) do
+            end
+          rescue SystemCallError
+            false
+          else
+            true
+          end
+        end
+
+        def sync_schema
+          ::Rails.application.eager_load!
+          ObjectSpace.each_object(Class) do |klass|
+            klass.sync_schema if klass < Searcher
+          end
         end
 
         def find_groonga
@@ -95,18 +129,15 @@ module Groonga
           while n_retried <= 20
             n_retried += 1
             sleep(0.05)
-            begin
-              TCPSocket.open(@url.host, @url.port) do
-              end
-            rescue SystemCallError
+            if groonga_server_running?
+              break
+            else
               begin
                 pid = Process.waitpid(@pid, Process::WNOHANG)
               rescue SystemCallError
                 @pid = nil
                 break
               end
-            else
-              break
             end
           end
         end
@@ -114,11 +145,7 @@ module Groonga
         def wait_groonga_shutdown
           # TODO: Remove me when Groonga 6.0.1 has been released.
           # Workaround to shutdown as soon as possible.
-          begin
-            TCPSocket.open(@url.host, @url.port) do
-            end
-          rescue SystemCallError
-          end
+          groonga_server_running?
 
           n_retried = 0
           while n_retried <= 20
