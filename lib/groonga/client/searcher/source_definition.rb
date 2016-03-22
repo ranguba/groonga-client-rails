@@ -14,10 +14,17 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-require "groonga/client/rails/version"
-
-require "groonga/client/searcher"
-
-if defined?(Rails)
-  require "groonga/client/railtie"
+module Groonga
+  class Client
+    class Searcher
+      class SourceDefinition
+        attr_reader :model_class
+        attr_reader :columns
+        def initialize(model_class, columns)
+          @model_class = model_class
+          @columns = columns
+        end
+      end
+    end
+  end
 end
