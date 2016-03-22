@@ -2,7 +2,7 @@ PATH
   remote: ../../../
   specs:
     groonga-client-rails (1.0.0)
-      groonga-client
+      groonga-client (>= 0.2.3)
       rails
 
 GEM
@@ -68,11 +68,13 @@ GEM
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     gqtp (1.0.6)
-    groonga-client (0.1.9)
+    groonga-client (0.2.3)
       gqtp (>= 1.0.4)
-      groonga-command (>= 1.0.8)
-    groonga-command (1.1.7)
+      groonga-command (>= 1.2.0)
+      hashie
+    groonga-command (1.2.0)
       json
+    hashie (3.4.3)
     i18n (0.7.0)
     jbuilder (2.4.1)
       activesupport (>= 3.0.0, < 5.1)

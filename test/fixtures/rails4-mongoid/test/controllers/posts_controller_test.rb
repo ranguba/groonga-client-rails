@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class PostsControllerTest < ActionController::TestCase
+  include Groonga::Client::Rails::Fixture
+
   setup do
     @post = create(:post)
   end
