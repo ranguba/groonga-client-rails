@@ -57,15 +57,6 @@ module Groonga
           sync_records
         end
 
-        private
-        def sources
-          @sources ||= {}
-        end
-
-        def default_table_name
-          name.gsub(/Searcher\z/, "").tableize
-        end
-
         def sync_schema
           current_schema = Client.open do |client|
             client.schema
@@ -88,6 +79,15 @@ module Groonga
               searcher.upsert(model)
             end
           end
+        end
+
+        private
+        def sources
+          @sources ||= {}
+        end
+
+        def default_table_name
+          name.gsub(/Searcher\z/, "").tableize
         end
 
         def ensure_model_classes_loaded
