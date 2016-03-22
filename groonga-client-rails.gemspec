@@ -49,5 +49,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("test-unit-rr")
   spec.add_development_dependency("packnga")
   spec.add_development_dependency("kramdown")
-  spec.add_development_dependency("groonga-command-parser")
 end
