@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.files += Dir.glob("doc/text/*")
   spec.test_files += Dir.glob("test/**/*")
 
-  spec.add_runtime_dependency("groonga-client", ">= 0.2.2")
+  spec.add_runtime_dependency("groonga-client", ">= 0.2.3")
   spec.add_runtime_dependency("rails")
 
   spec.add_development_dependency("bundler")
