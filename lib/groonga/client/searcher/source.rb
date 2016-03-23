@@ -17,56 +17,41 @@
 module Groonga
   class Client
     class Searcher
-      class Schema
-        attr_reader :table
+      class Source
+        attr_reader :model_class
         attr_reader :columns
-        def initialize(table)
-          @table = table
+        def initialize(schema, model_class)
+          @schema = schema
+          @model_class = model_class
           @columns = {}
         end
 
-        def table=(name)
-          name = name.to_s if name.is_a?(Symbol)
-          @table = name
+        def []=(name, reader)
+          unless @schema.have_column?(name)
+            message = "unknown column name: #{name.inspect}"
+            available_columns = @schema.columns.keys.join(", ")
+            message << "available columns: [#{available_columns}]"
+            raise ArgumentError, message
+          end
+          @columns[name.to_s] = reader
         end
 
-        def column(name, options)
-          name = normalize_name(name)
-          @columns[name] = Column.new(name, options)
-        end
+        def method_missing(name, *args, &block)
+          return super unless name.to_s.end_with?("=")
 
-        def have_column?(name)
-          name = normalize_name(name)
-          @columns.key?(name)
-        end
-
-        private
-        def normalize_name(name)
-          if name.is_a?(Symbol)
-            name.to_s
+          base_name = name.to_s[0..-2]
+          if @schema.have_column?(base_name)
+            __send__(:[]=, base_name, *args, &block)
           else
-            name
+            super
           end
         end
 
-        class Column
-          attr_reader :name
-          def initialize(name, options)
-            @name = name
-            @options = options
-          end
+        def respond_to_missing?(name, include_private)
+          return super unless name.to_s.end_with?("=")
 
-          def type
-            @options[:type] || "Text"
-          end
-
-          def have_index?
-            @options[:index]
-          end
-
-          def have_full_text_search_index?
-            have_index? and @options[:index_type] == :full_text_search
-          end
+          base_name = name.to_s[0..-2]
+          @schema.have_column?(base_name)
         end
       end
     end

@@ -4,5 +4,9 @@ class Post
   field :title, type: String
   field :body, type: String
 
-  PostsSearcher.add_source(self, columns: [:title, :body, :updated_at])
+  PostsSearcher.source(self).title = :title
+  PostsSearcher.source(self).body = lambda do |model|
+    model.body.gsub(/<.*?>/, "")
+  end
+  PostsSearcher.source(self).updated_at = true
 end

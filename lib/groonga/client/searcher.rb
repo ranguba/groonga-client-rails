@@ -18,7 +18,7 @@ require "groonga/client/searcher/request"
 require "groonga/client/searcher/result_set"
 require "groonga/client/searcher/schema"
 require "groonga/client/searcher/schema_synchronizer"
-require "groonga/client/searcher/source_definition"
+require "groonga/client/searcher/source"
 
 module Groonga
   class Client
@@ -28,28 +28,8 @@ module Groonga
           @schema ||= Schema.new(default_table_name)
         end
 
-        def add_source(model_class, columns:)
-          sources[model_class] = SourceDefinition.new(model_class, columns)
-
-          searcher_class = self
-          model_class.after_create do |model|
-            searcher = searcher_class.new
-            searcher.create(model)
-          end
-
-          model_class.after_update do |model|
-            searcher = searcher_class.new
-            searcher.update(model)
-          end
-
-          model_class.after_destroy do |model|
-            searcher = searcher_class.new
-            searcher.destroy(model)
-          end
-        end
-
-        def fetch_source_definition(source)
-          sources.fetch(source.class)
+        def source(model_class)
+          sources[model_class] ||= create_source(model_class)
         end
 
         def sync
@@ -86,6 +66,28 @@ module Groonga
           @sources ||= {}
         end
 
+        def create_source(model_class)
+          source = Source.new(schema, model_class)
+
+          searcher_class = self
+          model_class.after_create do |model|
+            searcher = searcher_class.new
+            searcher.create(model)
+          end
+
+          model_class.after_update do |model|
+            searcher = searcher_class.new
+            searcher.update(model)
+          end
+
+          model_class.after_destroy do |model|
+            searcher = searcher_class.new
+            searcher.destroy(model)
+          end
+
+          source
+        end
+
         def default_table_name
           name.gsub(/Searcher\z/, "").tableize
         end
@@ -98,31 +100,41 @@ module Groonga
       def inititalize
       end
 
-      def upsert(source)
-        definition = self.class.fetch_source_definition(source)
+      def upsert(model)
+        source = self.class.source(model.class)
         record = {}
-        definition.columns.each do |name, _|
-          record[name.to_s] = source.__send__(name)
+        source.columns.each do |name, reader|
+          case reader
+          when Symbol
+            value = model.__send__(reader)
+          when TrueClass
+            value = model.__send__(name)
+          when NilClass
+            next
+          else
+            value = reader.call(model)
+          end
+          record[name] = value
         end
-        record["_key"] = source_key(source)
+        record["_key"] = model_key(model)
         Client.open do |client|
           client.load(:table => self.class.schema.table,
                       :values => [record])
         end
       end
 
-      def create(source)
-        upsert(source)
+      def create(model)
+        upsert(model)
       end
 
-      def update(source)
-        upsert(source)
+      def update(model)
+        upsert(model)
       end
 
-      def destroy(source)
+      def destroy(model)
         Client.open do |client|
           client.delete(table: self.class.schema.table,
-                        key: source_key(source))
+                        key: model_key(model))
         end
       end
 
@@ -131,8 +143,8 @@ module Groonga
       end
 
       private
-      def source_key(source)
-        "#{source.class.name}-#{source.id}"
+      def model_key(model)
+        "#{model.class.name}-#{model.id}"
       end
     end
   end
