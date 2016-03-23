@@ -23,12 +23,22 @@ module Groonga
         extend ActiveSupport::Concern
 
         included do
-          setup do
-            setup_groonga
-          end
+          if singleton_class.method_defined?(:setup)
+            setup do
+              setup_groonga
+            end
 
-          teardown do
-            teardown_groonga
+            teardown do
+              teardown_groonga
+            end
+          elsif singleton_class.method_defined?(:before)
+            before(:each) do
+              setup_groonga
+            end
+
+            after(:each) do
+              teardown_groonga
+            end
           end
         end
 
