@@ -22,6 +22,10 @@ unless system(RbConfig.ruby, "test/unit/run-test.rb", *ARGV)
   exit(false)
 end
 
+def bundlered?
+  not ENV["BUNDLE_GEMFILE"].nil?
+end
+
 def unbundler
   ENV["BUNDLE_GEMFILE"] = nil
   ENV["GEM_HOME"] = nil
@@ -29,11 +33,16 @@ def unbundler
   ENV["RUBYOPT"]  = nil
 end
 
-unbundler
+if bundlered?
+  unbundler
+  command_line = ["bundle", "exec"]
+else
+  command_line = [RbConfig.ruby]
+end
 
 Dir.glob("#{__dir__}/apps/*") do |test_application|
   Dir.chdir(test_application) do
-    unless system(RbConfig.ruby, "-S", "bin/rake",
+    unless system(*command_line, "bin/rake",
                   "test", "TESTOPTS=#{ARGV.join(' ')}")
       exit(false)
     end
