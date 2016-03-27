@@ -15,3 +15,25 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 require "groonga/client/rails/fixture"
+
+module Groonga
+  class Client
+    module Rails
+      module SpecHelper
+        include Fixture
+
+        extend ActiveSupport::Concern
+
+        included do
+          before(:each) do
+            setup_groonga
+          end
+
+          after(:each) do
+            teardown_groonga
+          end
+        end
+      end
+    end
+  end
+end

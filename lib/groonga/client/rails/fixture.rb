@@ -20,28 +20,6 @@ module Groonga
   class Client
     module Rails
       module Fixture
-        extend ActiveSupport::Concern
-
-        included do
-          if singleton_class.method_defined?(:setup)
-            setup do
-              setup_groonga
-            end
-
-            teardown do
-              teardown_groonga
-            end
-          elsif singleton_class.method_defined?(:before)
-            before(:each) do
-              setup_groonga
-            end
-
-            after(:each) do
-              teardown_groonga
-            end
-          end
-        end
-
         def setup_groonga
           @groonga_server_runner = GroongaServerRunner.new
           @groonga_server_runner.run
