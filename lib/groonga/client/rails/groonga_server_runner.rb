@@ -118,7 +118,7 @@ module Groonga
           else
             base_tmp_dir = ::Rails.root + "tmp"
           end
-          tmp_dir = base_tmp_dir + "groonga-client-rails"
+          tmp_dir = base_tmp_dir + "groonga-client-rails.#{Process.pid}"
           FileUtils.rm_rf(tmp_dir)
           FileUtils.mkdir_p(tmp_dir)
           tmp_dir
