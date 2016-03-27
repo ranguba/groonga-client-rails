@@ -45,6 +45,7 @@ end
 
 Dir.glob("#{__dir__}/apps/*") do |test_application|
   Dir.chdir(test_application) do
+    system(*command_line, "env")
     unless system(*command_line, "bin/rake",
                   "test", "TESTOPTS=#{ARGV.join(' ')}")
       exit(false)
