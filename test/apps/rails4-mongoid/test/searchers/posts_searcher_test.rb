@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class PostsSearcherTest < ActionController::TestCase
-  include Groonga::Client::Rails::Fixture
+  include Groonga::Client::Rails::TestHelper
 
   setup do
     @searcher = PostsSearcher.new
