@@ -36,7 +36,9 @@ end
 unbundler if bundlered?
 
 Dir.glob("#{__dir__}/apps/*") do |test_application|
-  env = {}
+  env = {
+    "BUNDLE_GEMFILE" => "#{test_application}/Gemfile",
+  }
   command_line = [
     RbConfig.ruby,
     "bin/rake",
