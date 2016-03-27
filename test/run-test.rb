@@ -44,11 +44,12 @@ else
 end
 
 Dir.glob("#{__dir__}/apps/*") do |test_application|
-  Dir.chdir(test_application) do
-    system(*command_line, "env")
-    unless system(*command_line, "bin/rake",
-                  "test", "TESTOPTS=#{ARGV.join(' ')}")
-      exit(false)
-    end
+  env = {}
+  command_line.concat(["bin/rake", "test", "TESTOPTS=#{ARGV.join(' ')}"])
+  options = {
+    :chdir => test_application,
+  }
+  unless system(env, *command_line, options)
+    exit(false)
   end
 end
