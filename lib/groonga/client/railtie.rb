@@ -20,6 +20,10 @@ module Groonga
   class Client
     # @private
     class Railtie < ::Rails::Railtie
+      rake_tasks do
+        load "groonga/client/railties/groonga.rake"
+      end
+
       initializer "groonga-client.eager_load" do |app|
         app.paths.add("app/searchers",
                       eager_load: true,
