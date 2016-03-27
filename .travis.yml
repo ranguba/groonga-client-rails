@@ -12,7 +12,7 @@ before_install:
 install:
   - bundle install --jobs=3 --retry=3
   - |
-    for test_app in test/fixtures/*
+    for test_app in test/apps/*
     do
       (cd ${test_app} && bundle install --jobs=3 --retry=3)
     done
