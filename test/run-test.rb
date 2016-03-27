@@ -34,6 +34,8 @@ def unbundler
 end
 
 if bundlered?
+  require "pp"
+  pp ENV
   unbundler
   command_line = ["bundle", "exec"]
 else
