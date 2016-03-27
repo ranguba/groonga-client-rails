@@ -57,6 +57,12 @@ module Groonga
                           OutputColumnsParameter.new(value))
           end
 
+          def sortby(value)
+            add_parameter(OverwriteMerger,
+                          SortbyParameter.new(value))
+          end
+          alias_method :sort, :sortby
+
           private
           def create_request(parameters)
             self.class.new(parameters)
@@ -210,6 +216,31 @@ module Groonga
                 parameters[:command_version] = "2"
               end
               parameters
+            end
+          end
+        end
+
+        # @private
+        class SortbyParameter
+          def initialize(sortby)
+            @sortby = sortby
+          end
+
+          def to_parameters
+            if @sortby.blank?
+              {}
+            else
+              case @sortby
+              when ::Array
+                sortby = @sortby.collect(&:to_s).join(", ")
+              when Symbol
+                sortby = @sortby.to_s
+              else
+                sortby = @sortby
+              end
+              {
+                sortby: sortby,
+              }
             end
           end
         end
