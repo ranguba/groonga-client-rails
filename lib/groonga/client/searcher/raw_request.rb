@@ -32,7 +32,7 @@ module Groonga
         end
 
         def parameter(name, value)
-          add_parameter(OverwriteParameters,
+          add_parameter(OverwriteMerger,
                         RequestParameter.new(name, value))
         end
 
