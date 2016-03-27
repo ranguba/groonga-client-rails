@@ -22,24 +22,13 @@ unless system(RbConfig.ruby, "test/unit/run-test.rb", *ARGV)
   exit(false)
 end
 
-def bundlered?
-  not ENV["BUNDLE_GEMFILE"].nil?
-end
-
-def unbundler
-  ENV["BUNDLE_GEMFILE"] = nil
-  ENV["GEM_HOME"] = nil
-  ENV["GEM_PATH"] = nil
-  ENV["RUBYOPT"]  = nil
-end
-
-unbundler if bundlered?
-
 Dir.glob("#{__dir__}/apps/*") do |test_application|
   env = {
     "BUNDLE_GEMFILE" => "#{test_application}/Gemfile",
   }
   command_line = [
+    "bundle",
+    "exec",
     RbConfig.ruby,
     "bin/rake",
     "test",
