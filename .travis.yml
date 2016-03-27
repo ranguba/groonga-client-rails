@@ -17,4 +17,9 @@ install:
       (cd ${test_app} && bundle install --jobs=3 --retry=3)
     done
 script:
-  - rake
+  - test/unit/run-test.rb
+  - |
+    for test_app in test/apps/*
+    do
+      (cd ${test_app} && bundle exec rake)
+    done
