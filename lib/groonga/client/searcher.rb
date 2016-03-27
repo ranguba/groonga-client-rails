@@ -139,7 +139,15 @@ module Groonga
       end
 
       def search
-        TableRequest.new(self.class.schema.table)
+        schema = self.class.schema
+        full_text_searchable_column_names = []
+        schema.columns.each do |name, column|
+          if column.have_full_text_search_index?
+            full_text_searchable_column_names << name
+          end
+        end
+        TableRequest.new(schema.table).
+          match_columns(full_text_searchable_column_names)
       end
 
       private
