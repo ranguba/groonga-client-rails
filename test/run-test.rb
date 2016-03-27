@@ -30,7 +30,7 @@ end
 
 unbundler
 
-Dir.glob("#{__dir__}/fixtures/*") do |test_application|
+Dir.glob("#{__dir__}/apps/*") do |test_application|
   Dir.chdir(test_application) do
     unless system(RbConfig.ruby, "-S", "rake",
                   "test", "TESTOPTS=#{ARGV.join(' ')}")
