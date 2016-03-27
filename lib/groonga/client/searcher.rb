@@ -14,8 +14,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-require "groonga/client/searcher/request"
-require "groonga/client/searcher/result_set"
+require "groonga/client/searcher/select"
 require "groonga/client/searcher/schema"
 require "groonga/client/searcher/schema_synchronizer"
 require "groonga/client/searcher/source"
@@ -139,6 +138,10 @@ module Groonga
       end
 
       def search
+        select
+      end
+
+      def select
         schema = self.class.schema
         full_text_searchable_column_names = []
         schema.columns.each do |name, column|
@@ -146,7 +149,7 @@ module Groonga
             full_text_searchable_column_names << name
           end
         end
-        TableRequest.new(schema.table).
+        Select::Request.new(schema.table).
           match_columns(full_text_searchable_column_names)
       end
 
