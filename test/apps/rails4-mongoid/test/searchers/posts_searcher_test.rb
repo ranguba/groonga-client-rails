@@ -21,4 +21,46 @@ class PostsSearcherTest < ActionController::TestCase
     assert_equal(["Hello World"],
                  result_set.records.collect {|record| record["body"]})
   end
+
+  test "should support snippet_html in output_columns" do
+    create(:post, body: "Hello World")
+    create(:post, body: "Hi Rails! Hello!")
+    result_set = @searcher.
+      search.
+      query("Hello").
+      output_columns("snippet_html(body)").
+      result_set
+    snippet_htmls = result_set.records.collect do |record|
+      record["snippet_html"]
+    end
+    assert_equal([
+                   ["<span class=\"keyword\">Hello</span> World"],
+                   ["Hi Rails! <span class=\"keyword\">Hello</span>!"],
+                 ],
+                 snippet_htmls)
+  end
+
+  test "should support Array for output_columns" do
+    post = create(:post, body: "Hello World")
+    result_set = @searcher.
+      search.
+      query("World").
+      output_columns(["_key", "body"]).
+      result_set
+    data = result_set.records.collect do |record|
+      [
+        record["_id"],
+        record["_key"],
+        record["body"],
+      ]
+    end
+    assert_equal([
+                   [
+                     nil,
+                     "#{post.class}-#{post.id}",
+                     "Hello World",
+                   ],
+                 ],
+                 data)
+  end
 end

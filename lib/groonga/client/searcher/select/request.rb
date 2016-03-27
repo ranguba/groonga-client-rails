@@ -47,6 +47,11 @@ module Groonga
                           RequestParameter.new(:query, value))
           end
 
+          def output_columns(value)
+            add_parameter(OverwriteMerger,
+                          OutputColumnsParameter.new(value))
+          end
+
           private
           def create_request(parameters)
             self.class.new(parameters)
@@ -91,6 +96,35 @@ module Groonga
               {
                 match_columns: match_columns,
               }
+            end
+          end
+        end
+
+        # @private
+        class OutputColumnsParameter
+          def initialize(output_columns)
+            @output_columns = output_columns
+          end
+
+          def to_parameters
+            if @output_columns.blank?
+              {}
+            else
+              case @output_columns
+              when ::Array
+                output_columns = @output_columns.join(", ")
+              when Symbol
+                output_columns = @output_columns.to_s
+              else
+                output_columns = @output_columns
+              end
+              parameters = {
+                output_columns: output_columns,
+              }
+              if output_columns.include?("(")
+                parameters[:command_version] = "2"
+              end
+              parameters
             end
           end
         end
