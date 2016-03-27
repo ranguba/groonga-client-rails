@@ -49,6 +49,7 @@ Dir.glob("#{__dir__}/apps/*") do |test_application|
   options = {
     :chdir => test_application,
   }
+  system(env, "bundle", "exec", "env", options)
   unless system(env, *command_line, options)
     exit(false)
   end
