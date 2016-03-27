@@ -33,24 +33,19 @@ def unbundler
   ENV["RUBYOPT"]  = nil
 end
 
-if bundlered?
-  require "pp"
-  pp ENV
-  unbundler
-  pp ENV
-  command_line = ["bundle", "exec"]
-else
-  command_line = [RbConfig.ruby]
-end
+unbundler if bundlered?
 
 Dir.glob("#{__dir__}/apps/*") do |test_application|
   env = {}
-  command_line.concat(["bin/rake", "test", "TESTOPTS=#{ARGV.join(' ')}"])
+  command_line = [
+    RbConfig.ruby,
+    "bin/rake",
+    "test",
+    "TESTOPTS=#{ARGV.join(' ')}",
+  ]
   options = {
     :chdir => test_application,
   }
-  system(env, "bundle", "exec", "env", options)
-  system(env, "bundle", "exec", "pwd", options)
   unless system(env, *command_line, options)
     exit(false)
   end
