@@ -23,6 +23,7 @@ unless system(RbConfig.ruby, "test/unit/run-test.rb", *ARGV)
 end
 
 def unbundler
+  ENV["BUNDLE_GEMFILE"] = nil
   ENV["GEM_HOME"] = nil
   ENV["GEM_PATH"] = nil
   ENV["RUBYOPT"]  = nil
