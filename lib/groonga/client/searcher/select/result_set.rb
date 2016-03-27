@@ -40,7 +40,7 @@ module Groonga
           end
 
           def records
-            @response.records
+            @records ||= build_records
           end
 
           def sources
@@ -52,6 +52,12 @@ module Groonga
           end
 
           private
+          def build_records
+            @response.records.collect.with_index do |record, i|
+              Record.new(self, i, record)
+            end
+          end
+
           def fetch_sources
             source_ids = {}
             records.collect do |record|
@@ -67,6 +73,41 @@ module Groonga
             end
             records.collect do |record|
               sources[record["_key"]]
+            end
+          end
+
+          class Record
+            def initialize(result_set, nth, raw_record)
+              @result_set = result_set
+              @nth = nth
+              @raw_record = raw_record
+            end
+
+            def source
+              @result_set.sources[@nth]
+            end
+
+            def [](name)
+              @raw_record[normalize_name(name)]
+            end
+
+            def method_missing(name, *args, &block)
+              return super unless args.empty?
+              return super unless @raw_record.key?(name.to_s)
+
+              self[name]
+            end
+
+            def respond_to_missing?(name, *args, &block)
+              return super unless args.empty?
+              return super unless @raw_record.key?(name.to_s)
+
+              @raw_record.key?(normalize_name(name))
+            end
+
+            private
+            def normalize_name(name)
+              name.to_s
             end
           end
         end
