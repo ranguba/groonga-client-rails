@@ -22,6 +22,14 @@ unless system(RbConfig.ruby, "test/unit/run-test.rb", *ARGV)
   exit(false)
 end
 
+def unbundler
+  ENV["GEM_HOME"] = nil
+  ENV["GEM_PATH"] = nil
+  ENV["RUBYOPT"]  = nil
+end
+
+unbundler
+
 Dir.glob("#{__dir__}/fixtures/*") do |test_application|
   Dir.chdir(test_application) do
     unless system(RbConfig.ruby, "-S", "rake",
