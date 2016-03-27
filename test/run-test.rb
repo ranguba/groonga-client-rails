@@ -37,6 +37,7 @@ if bundlered?
   require "pp"
   pp ENV
   unbundler
+  pp ENV
   command_line = ["bundle", "exec"]
 else
   command_line = [RbConfig.ruby]
