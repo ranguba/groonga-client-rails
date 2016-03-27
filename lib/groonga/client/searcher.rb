@@ -16,6 +16,7 @@
 
 require "groonga/client"
 
+require "groonga/client/searcher/error"
 require "groonga/client/searcher/select"
 require "groonga/client/searcher/schema"
 require "groonga/client/searcher/schema_synchronizer"

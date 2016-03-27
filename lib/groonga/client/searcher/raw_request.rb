@@ -25,7 +25,9 @@ module Groonga
 
         def response
           @reponse ||= Client.open do |client|
-            client.execute(@command_name, to_parameters)
+            response = client.execute(@command_name, to_parameters)
+            raise ErrorResponse.new(response) unless response.success?
+            response
           end
         end
 
