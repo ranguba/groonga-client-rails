@@ -5,6 +5,8 @@ rvm:
   - 2.1
   - 2.2
   - 2.3.0
+services:
+  - mongodb
 before_install:
   - curl --silent --location https://github.com/groonga/groonga/raw/master/data/travis/setup.sh | sh
   - sudo apt-get -qq -y install groonga-bin groonga-tokenizer-mecab
