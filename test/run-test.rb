@@ -32,7 +32,7 @@ unbundler
 
 Dir.glob("#{__dir__}/apps/*") do |test_application|
   Dir.chdir(test_application) do
-    unless system(RbConfig.ruby, "-S", "rake",
+    unless system(RbConfig.ruby, "-S", "bin/rake",
                   "test", "TESTOPTS=#{ARGV.join(' ')}")
       exit(false)
     end
