@@ -22,6 +22,41 @@ class PostsSearcherTest < ActionController::TestCase
                  result_set.records.collect {|record| record["body"]})
   end
 
+  test "should be searchable by a filter" do
+    create(:post, body: "Hello World")
+    create(:post, body: "Hello Rails")
+    result_set = @searcher.
+      search.
+      filter("body @ %{keyword}", {keyword: "World"}).
+      result_set
+    assert_equal(["Hello World"],
+                 result_set.records.collect {|record| record["body"]})
+  end
+
+  test "should be searchable by filters" do
+    create(:post, body: "Hello World")
+    create(:post, body: "Hello Rails")
+    create(:post, body: "Hi World")
+    result_set = @searcher.
+      search.
+      filter("body @ %{keyword}", {keyword: "Hello"}).
+      filter("body @ %{keyword}", {keyword: "World"}).
+      result_set
+    assert_equal(["Hello World"],
+                 result_set.records.collect {|record| record["body"]})
+  end
+
+  test "should be searchable with special characters by a filter" do
+    create(:post, body: "Hello \"Wo\\rld\"")
+    create(:post, body: "Hello Rails")
+    result_set = @searcher.
+      search.
+      filter("body @ %{keyword}", {keyword: "\"Wo\\rld\""}).
+      result_set
+    assert_equal(["Hello \"Wo\\rld\""],
+                 result_set.records.collect {|record| record["body"]})
+  end
+
   test "should support snippet_html in output_columns" do
     create(:post, body: "Hello World")
     create(:post, body: "Hi Rails! Hello!")

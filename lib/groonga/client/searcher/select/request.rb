@@ -47,6 +47,11 @@ module Groonga
                           RequestParameter.new(:query, value))
           end
 
+          def filter(expression, values=nil)
+            add_parameter(FilterMerger,
+                          FilterParameter.new(expression, values))
+          end
+
           def output_columns(value)
             add_parameter(OverwriteMerger,
                           OutputColumnsParameter.new(value))
@@ -76,6 +81,23 @@ module Groonga
         end
 
         # @private
+        class FilterMerger < ParameterMerger
+          def to_parameters
+            params1 = @parameters1.to_parameters
+            params2 = @parameters2.to_parameters
+            params = params1.merge(params2)
+            filter1 = params1[:filter]
+            filter2 = params2[:filter]
+            if filter1.present? and filter2.present?
+              params[:filter] = "(#{filter1}) && (#{filter2})"
+            else
+              params[:filter] = (filter1 || filter2)
+            end
+            params
+          end
+        end
+
+        # @private
         class MatchColumnsParameter
           def initialize(match_columns)
             @match_columns = match_columns
@@ -96,6 +118,69 @@ module Groonga
               {
                 match_columns: match_columns,
               }
+            end
+          end
+        end
+
+        # @private
+        class FilterParameter
+          def initialize(expression, values)
+            @expression = expression
+            @values = values
+          end
+
+          def to_parameters
+            if @expression.blank?
+              {}
+            else
+              if @values.blank?
+                expression = @expression
+              else
+                escaped_values = {}
+                @values.each do |key, value|
+                  escaped_values[key] = escape_filter_value(value)
+                end
+                expression = @expression % escaped_values
+              end
+              {
+                filter: expression,
+              }
+            end
+          end
+
+          private
+          def escape_filter_value(value)
+            case value
+            when Numeric
+              value
+            when TrueClass, FalseClass
+              value
+            when NilClass
+              "null"
+            when String
+              ScriptSyntax.format_string(value)
+            when Symbol
+              ScriptSyntax.format_string(value.to_s)
+            when ::Array
+              escaped_value = "["
+              value.each_with_index do |element, i|
+                escaped_value << ", " if i > 0
+                escaped_value << escape_filter_value(element)
+              end
+              escaped_value << "]"
+              escaped_value
+            when ::Hash
+              escaped_value = "{"
+              value.each_with_index do |(k, v), i|
+                escaped_value << ", " if i > 0
+                escaped_value << escape_filter_value(k.to_s)
+                escaped_value << ": "
+                escaped_value << escape_filter_value(v)
+              end
+              escaped_value << "}"
+              escaped_value
+            else
+              value
             end
           end
         end

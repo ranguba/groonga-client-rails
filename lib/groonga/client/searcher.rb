@@ -14,6 +14,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+require "groonga/client"
+
 require "groonga/client/searcher/select"
 require "groonga/client/searcher/schema"
 require "groonga/client/searcher/schema_synchronizer"
