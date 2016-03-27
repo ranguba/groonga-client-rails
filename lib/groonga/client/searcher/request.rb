@@ -14,6 +14,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+require "active_support/core_ext/object/blank"
+
 module Groonga
   class Client
     class Searcher
@@ -87,9 +89,21 @@ module Groonga
         end
 
         def to_parameters
-          {
-            match_columns: @match_columns,
-          }
+          if @match_columns.blank?
+            {}
+          else
+            case @match_columns
+            when ::Array
+              match_columns = @match_columns.join(", ")
+            when Symbol
+              match_columns = @match_columns.to_s
+            else
+              match_columns = @match_columns
+            end
+            {
+              match_columns: match_columns,
+            }
+          end
         end
       end
 

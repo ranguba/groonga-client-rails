@@ -16,17 +16,4 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-require "rbconfig"
-
-unless system(RbConfig.ruby, "test/unit/run-test.rb", *ARGV)
-  exit(false)
-end
-
-Dir.glob("#{__dir__}/fixtures/*") do |test_application|
-  Dir.chdir(test_application) do
-    unless system(RbConfig.ruby, "-S", "rake",
-                  "test", "TESTOPTS=#{ARGV.join(' ')}")
-      exit(false)
-    end
-  end
-end
+require "groonga/client/searcher"
