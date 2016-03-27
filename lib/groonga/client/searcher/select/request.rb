@@ -63,6 +63,22 @@ module Groonga
           end
           alias_method :sort, :sortby
 
+          def offset(value)
+            parameter(:offset, value)
+          end
+
+          def limit(value)
+            parameter(:limit, value)
+          end
+
+          def paginate(page, per_page: 10)
+            page ||= 1
+            page = page.to_i
+            return self if page < 0
+
+            offset(per_page * page).limit(per_page)
+          end
+
           private
           def create_request(parameters)
             self.class.new(parameters)
