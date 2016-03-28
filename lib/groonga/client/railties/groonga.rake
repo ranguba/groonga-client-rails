@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 namespace :groonga do
+  desc "Synchronize Groonga database with model data"
   task :sync do
     Rails.application.eager_load!
     ObjectSpace.each_object(Class) do |klass|
