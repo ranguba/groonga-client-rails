@@ -18,7 +18,7 @@
 
 namespace :groonga do
   desc "Synchronize Groonga database with model data"
-  task :sync do
+  task :sync => :environment do
     Rails.application.eager_load!
     ObjectSpace.each_object(Class) do |klass|
       klass.sync if klass < Groonga::Client::Searcher
