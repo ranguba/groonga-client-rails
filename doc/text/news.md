@@ -1,5 +1,11 @@
 # NEWS
 
+## 0.9.2 - 2016-03-28
+
+### Fixes
+
+  * `groonga:sync` task: Added a missing dependency.
+
 ## 0.9.1 - 2016-03-28
 
 ### Improvements
