@@ -108,11 +108,11 @@ class PostsSearcherTest < ActionController::TestCase
       record["body"]
     end
     assert_equal([
-                   "Hello 15",
-                   "Hello 16",
-                   "Hello 17",
-                   "Hello 18",
-                   "Hello 19",
+                   "Hello 10",
+                   "Hello 11",
+                   "Hello 12",
+                   "Hello 13",
+                   "Hello 14",
                  ],
                  data)
   end

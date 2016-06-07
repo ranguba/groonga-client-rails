@@ -34,7 +34,7 @@ module Groonga
           end
 
           def result_set
-            @result_set ||= ResultSet.new(response)
+            @result_set ||= create_result_set
           end
 
           def match_columns(value)
@@ -74,14 +74,31 @@ module Groonga
           def paginate(page, per_page: 10)
             page ||= 1
             page = page.to_i
-            return self if page < 0
-
-            offset(per_page * page).limit(per_page)
+            if page <= 0
+              offset = 0
+            else
+              offset = per_page * (page - 1)
+            end
+            offset(offset).limit(per_page)
           end
 
           private
           def create_request(parameters)
             self.class.new(parameters)
+          end
+
+          def create_result_set
+            result_set = ResultSet.new(response)
+            if paginated? and defined?(Kaminari)
+              result_set.extend(Kaminari::ConfigurationMethods::ClassMethods)
+              result_set.extend(Kaminari::PageScopeMethods)
+            end
+            result_set
+          end
+
+          def paginated?
+            parameters = to_parameters
+            parameters.key?(:offset) and parameters.key?(:limit)
           end
         end
 
