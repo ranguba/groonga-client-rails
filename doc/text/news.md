@@ -1,5 +1,11 @@
 # NEWS
 
+## 0.9.3 - 2016-06-07
+
+### Improvements
+
+  * Added native Kaminari support.
+
 ## 0.9.2 - 2016-03-28
 
 ### Fixes
