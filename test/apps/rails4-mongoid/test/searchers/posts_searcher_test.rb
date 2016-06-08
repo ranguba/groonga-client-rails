@@ -14,6 +14,15 @@ class PostsSearcherTest < ActionController::TestCase
                  result_set.records.collect {|record| record["body"]})
   end
 
+  test "should be save tags" do
+    create(:post, tags: ["tag1", "tag2"])
+    result_set = @searcher.search.result_set
+    assert_equal([
+                   ["tag1", "tag2"],
+                 ],
+                 result_set.records.collect {|record| record["tags"]})
+  end
+
   test "should be searchable without match_columns" do
     create(:post, body: "Hello World")
     create(:post, body: "Hello Rails")
@@ -55,6 +64,23 @@ class PostsSearcherTest < ActionController::TestCase
       result_set
     assert_equal(["Hello \"Wo\\rld\""],
                  result_set.records.collect {|record| record["body"]})
+  end
+
+  test "should be searchable by an element of array" do
+    create(:post, tags: ["tag1", "tag2", "tag3"])
+    create(:post, tags: [])
+    create(:post, tags: ["tag2"])
+    create(:post, tags: ["tag3"])
+    result_set = @searcher.
+      search.
+      filter("tags @ %{tag}", {tag: "tag2"}).
+      sortby("_id").
+      result_set
+    assert_equal([
+                   ["tag1", "tag2", "tag3"],
+                   ["tag2"],
+                 ],
+                 result_set.records.collect {|record| record["tags"]})
   end
 
   test "should support snippet_html in output_columns" do

@@ -50,9 +50,16 @@ module Groonga
         def sync_column(column, current_column)
           if current_column.nil?
             Client.open do |client|
+              flags = []
+              if column.vector?
+                flags << "COLUMN_VECTOR"
+              else
+                flags << "COLUMN_SCALAR"
+              end
               client.column_create(:table => @schema.table,
                                    :name => column.name,
-                                   :type => column.type)
+                                   :type => column.type,
+                                   :flags => flags.join("|"))
             end
           end
 

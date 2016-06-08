@@ -1,7 +1,7 @@
 PATH
   remote: ../../../
   specs:
-    groonga-client-rails (0.9.3)
+    groonga-client-rails (0.9.4)
       groonga-client (>= 0.2.4)
       rails
 

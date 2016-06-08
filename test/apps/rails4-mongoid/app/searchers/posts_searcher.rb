@@ -9,6 +9,11 @@ class PostsSearcher < ApplicationSearcher
     index: true,
     index_type: :full_text_search,
   }
+  schema.column :tags, {
+    type: "ShortText",
+    vector: true,
+    index: true,
+  }
   schema.column :updated_at, {
     type: "Time",
     index: true,

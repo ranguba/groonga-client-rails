@@ -60,6 +60,10 @@ module Groonga
             @options[:type] || "Text"
           end
 
+          def vector?
+            @options[:vector]
+          end
+
           def have_index?
             @options[:index]
           end
