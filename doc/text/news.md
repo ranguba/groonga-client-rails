@@ -1,5 +1,11 @@
 # NEWS
 
+## 0.9.4 - 2016-06-09
+
+### Improvements
+
+  * Supported vector column.
+
 ## 0.9.3 - 2016-06-07
 
 ### Improvements
