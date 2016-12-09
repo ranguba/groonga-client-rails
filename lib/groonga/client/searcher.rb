@@ -16,8 +16,7 @@
 
 require "groonga/client"
 
-require "groonga/client/searcher/error"
-require "groonga/client/searcher/select"
+require "groonga/client/searcher/select_request"
 require "groonga/client/searcher/schema"
 require "groonga/client/searcher/schema_synchronizer"
 require "groonga/client/searcher/source"
@@ -152,7 +151,8 @@ module Groonga
             full_text_searchable_column_names << name
           end
         end
-        Select::Request.new(schema.table).
+        Request::Select.new(schema.table).
+          extend(SelectRequest).
           match_columns(full_text_searchable_column_names)
       end
 
