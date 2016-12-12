@@ -27,6 +27,7 @@ module Groonga
         def create_response
           response = super
           response.extend(SourcesSupport)
+          response.sources
           response
         end
 
