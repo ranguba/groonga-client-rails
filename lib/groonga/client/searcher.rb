@@ -151,8 +151,8 @@ module Groonga
             full_text_searchable_column_names << name
           end
         end
-        Request::Select.new(schema.table).
-          extend(SelectRequest).
+        extensions = [SelectRequest]
+        Request::Select.new(schema.table, extensions).
           match_columns(full_text_searchable_column_names)
       end
 
