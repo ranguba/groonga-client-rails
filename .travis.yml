@@ -11,7 +11,7 @@ before_install:
   - curl --silent --location https://github.com/groonga/groonga/raw/master/data/travis/setup.sh | sh
   - sudo apt-get -qq -y install groonga-bin groonga-tokenizer-mecab
   - gem update bundler
-  - git clone --depth 1 https://github.com/ranguba/groonga-client.git ../
+  - git clone --depth 1 https://github.com/ranguba/groonga-client.git ../groonga-client
 install:
   - bundle install --jobs=3 --retry=3
   - |
