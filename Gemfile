@@ -19,3 +19,7 @@
 source "https://rubygems.org/"
 
 gemspec
+
+if File.exist?("../groonga-client")
+  gem "groonga-client", path: "../groonga-client"
+end

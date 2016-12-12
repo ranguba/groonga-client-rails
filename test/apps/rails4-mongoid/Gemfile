@@ -33,6 +33,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'mongoid', '~> 5.1.1'
 
 gem 'groonga-client-rails', path: '../../../'
+gem 'groonga-client', path: '../../../../groonga-client'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
