@@ -21,3 +21,7 @@ source "https://rubygems.org/"
 gemspec
 
 gem "groonga-client", path: "../groonga-client"
+
+if (RUBY_VERSION.split(".").collect(&:to_i) <=> [2, 2]) < 0
+  gem "rails", "< 5"
+end
