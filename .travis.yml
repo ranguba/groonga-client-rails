@@ -17,6 +17,7 @@ install:
     for test_app in ${PWD}/test/apps/*
     do
       (cd ${test_app} && \
+       rm Gemfile.lock && \
        BUNDLE_GEMFILE=${test_app}/Gemfile bundle install --jobs=3 --retry=3)
     done
 script:
