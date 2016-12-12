@@ -14,23 +14,21 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-require "groonga/client/rails/fixture"
+require "groonga/client/spec-helper"
+require "groonga/client/rails/test_synchronizer"
 
 module Groonga
   class Client
     module Rails
       module SpecHelper
-        include Fixture
-
         extend ActiveSupport::Concern
 
         included do
-          before(:each) do
-            setup_groonga
-          end
+          inlcude Groonga::Client::SpecHelper
 
-          after(:each) do
-            teardown_groonga
+          before(:each) do
+            syncher = TestSynchronizer.new
+            syncher.sync
           end
         end
       end

@@ -14,23 +14,26 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-require "groonga/client/rails/fixture"
+require "groonga/client/test-helper"
+require "groonga/client/rails/test_synchronizer"
 
 module Groonga
   class Client
     module Rails
       module TestHelper
-        include Fixture
-
         extend ActiveSupport::Concern
 
         included do
-          setup do
-            setup_groonga
-          end
+          include Groonga::Client::TestHelper
 
-          teardown do
-            teardown_groonga
+          setup do
+            syncher = TestSynchronizer.new
+            options = {}
+            if self.class.respond_to?(:fixture_table_names)
+              fixture_table_names = self.fixture_table_names
+              options[:sync_records] = true unless fixture_table_names.empty?
+            end
+            syncher.sync(options)
           end
         end
       end
