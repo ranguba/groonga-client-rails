@@ -4,27 +4,28 @@ class PostsSearcherTest < ActionController::TestCase
   include Groonga::Client::Rails::TestHelper
 
   setup do
+    Post.destroy_all
     @searcher = PostsSearcher.new
   end
 
   test "should be untagged" do
-    create(:post, body: "<p>Hello <em>World</em></p>")
+    Post.create!(title: "Title", body: "<p>Hello <em>World</em></p>")
     result_set = @searcher.search.result_set
     assert_equal(["Hello World"],
                  result_set.records.collect {|record| record["body"]})
   end
 
   test "should be searchable without match_columns" do
-    create(:post, body: "Hello World")
-    create(:post, body: "Hello Rails")
+    Post.create!(title: "Title", body: "Hello World")
+    Post.create!(title: "Title", body: "Hello Rails")
     result_set = @searcher.search.query("World").result_set
     assert_equal(["Hello World"],
                  result_set.records.collect {|record| record["body"]})
   end
 
   test "should be searchable by a filter" do
-    create(:post, body: "Hello World")
-    create(:post, body: "Hello Rails")
+    Post.create!(title: "Title", body: "Hello World")
+    Post.create!(title: "Title", body: "Hello Rails")
     result_set = @searcher.
       search.
       filter("body @ %{keyword}", {keyword: "World"}).
@@ -34,9 +35,9 @@ class PostsSearcherTest < ActionController::TestCase
   end
 
   test "should be searchable by filters" do
-    create(:post, body: "Hello World")
-    create(:post, body: "Hello Rails")
-    create(:post, body: "Hi World")
+    Post.create!(title: "Title", body: "Hello World")
+    Post.create!(title: "Title", body: "Hello Rails")
+    Post.create!(title: "Title", body: "Hi World")
     result_set = @searcher.
       search.
       filter("body @ %{keyword}", {keyword: "Hello"}).
@@ -47,8 +48,8 @@ class PostsSearcherTest < ActionController::TestCase
   end
 
   test "should be searchable with special characters by a filter" do
-    create(:post, body: "Hello \"Wo\\rld\"")
-    create(:post, body: "Hello Rails")
+    Post.create!(title: "Title", body: "Hello \"Wo\\rld\"")
+    Post.create!(title: "Title", body: "Hello Rails")
     result_set = @searcher.
       search.
       filter("body @ %{keyword}", {keyword: "\"Wo\\rld\""}).
@@ -58,8 +59,8 @@ class PostsSearcherTest < ActionController::TestCase
   end
 
   test "should support snippet_html in output_columns" do
-    create(:post, body: "Hello World")
-    create(:post, body: "Hi Rails! Hello!")
+    Post.create!(title: "Title", body: "Hello World")
+    Post.create!(title: "Title", body: "Hi Rails! Hello!")
     result_set = @searcher.
       search.
       query("Hello").
@@ -76,7 +77,7 @@ class PostsSearcherTest < ActionController::TestCase
   end
 
   test "should support Array for output_columns" do
-    post = create(:post, body: "Hello World")
+    post = Post.create!(title: "Title", body: "Hello World")
     result_set = @searcher.
       search.
       query("World").
@@ -101,7 +102,7 @@ class PostsSearcherTest < ActionController::TestCase
 
   test "should support pagination" do
     100.times do |i|
-      create(:post, body: "Hello #{i}")
+      Post.create!(title: "Title", body: "Hello #{i}")
     end
     result_set = @searcher.search.paginate(3, per_page: 5).result_set
     data = result_set.records.collect do |record|

@@ -4,7 +4,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   include Groonga::Client::Rails::TestHelper
 
   setup do
-    @post = create(:post)
+    @post = posts(:one)
   end
 
   test "should get index" do
