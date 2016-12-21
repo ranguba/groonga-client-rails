@@ -80,7 +80,7 @@ module Groonga
           }
           parameters[:key_type] = column.type
           if column.text_family_type?
-            parameters[:normalizer] = "NormalizerAuto"
+            parameters[:normalizer] = decide_normalizer(column.normalizer)
           end
           execute(:table_create, parameters)
         end
@@ -114,13 +114,13 @@ module Groonga
           if column.have_full_text_search_index?
             parameters[:key_type] = "ShortText"
             parameters[:default_tokenizer] = "TokenBigram"
-            parameters[:normalizer] = "NormalizerAuto"
+            parameters[:normalizer] = decide_normalizer(column.normalizer)
           elsif column.reference?
             parameters[:key_type] = generate_reference_table_name(column)
           else
             parameters[:key_type] = column.type
             if column.text_family_type?
-              parameters[:normalizer] = "NormalizerAuto"
+              parameters[:normalizer] = decide_normalizer(column.normalizer)
             end
           end
           execute(:table_create, parameters)
@@ -156,6 +156,14 @@ module Groonga
             {}
           else
             current_table.columns
+          end
+        end
+
+        def decide_normalizer(custom_normalizer)
+          if custom_normalizer == false
+            nil
+          else
+            custom_normalizer || "NormalizerAuto"
           end
         end
 

@@ -60,6 +60,10 @@ module Groonga
             @options[:type] || "Text"
           end
 
+          def normalizer
+            @options[:normalizer]
+          end
+
           def text_family_type?
             case type
             when "ShortText", "Text", "LongText"
