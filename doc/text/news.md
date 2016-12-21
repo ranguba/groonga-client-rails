@@ -1,5 +1,12 @@
 # NEWS
 
+## 0.9.6 - 2016-12-21
+
+### Improvements
+
+  * Added indexed text family vector column to the default
+    `match_columns` list.
+
 ## 0.9.5 - 2016-12-21
 
 ### Improvements
