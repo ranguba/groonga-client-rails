@@ -4,7 +4,25 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.all
+    search = PostsSearcher.new.search
+    query = params[:query]
+    if query.blank?
+      search = search.sort_keys("-updated_at")
+    else
+      search = search.
+        query(query).
+        sort_keys("-_score")
+    end
+    search = search.
+      output_columns([
+                       "_key",
+                       "_score",
+                       "*",
+                       "highlight_html(title)",
+                       "snippet_html(body)",
+                     ]).
+      paginate(params[:page])
+    @result_set = search.result_set
   end
 
   # GET /posts/1

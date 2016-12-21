@@ -2,6 +2,13 @@
 
 <h1>Posts</h1>
 
+<p><%= @result_set.n_hits %> records</p>
+
+<%= form_tag(posts_path, method: "get") do %>
+  <%= search_field_tag "query", params["query"] %>
+  <%= submit_tag "Search" %>
+<% end %>
+
 <table>
   <thead>
     <tr>
@@ -12,10 +19,17 @@
   </thead>
 
   <tbody>
-    <% @posts.each do |post| %>
+    <% @result_set.records.each do |record| %>
+      <% post = record.source %>
       <tr>
-        <td><%= post.title %></td>
-        <td><%= post.body %></td>
+        <td><%= record.highlight_html.html_safe %></td>
+        <td>
+          <% if record.snippet_html.blank? %>
+            <%= post.body %>
+          <% else %>
+            <%= record.snippet_html.join("<br>").html_safe %>
+          <% end %>
+        </td>
         <td><%= link_to 'Show', post %></td>
         <td><%= link_to 'Edit', edit_post_path(post) %></td>
         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
