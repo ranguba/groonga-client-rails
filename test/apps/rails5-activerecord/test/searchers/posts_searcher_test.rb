@@ -64,7 +64,7 @@ class PostsSearcherTest < ActionController::TestCase
     result_set = @searcher.
       search.
       query("Hello").
-      output_columns("snippet_html(body)").
+      output_columns(["_key", "snippet_html(body)"]).
       result_set
     snippet_htmls = result_set.records.collect do |record|
       record["snippet_html"]
