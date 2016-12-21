@@ -33,11 +33,10 @@ module Groonga
           current_table = find_current_table
           return if current_table # TODO: validation
 
-          Client.open do |client|
-            client.table_create(:name => @schema.table,
-                                :flags => "TABLE_PAT_KEY",
-                                :key_type => "ShortText")
-          end
+          execute(:table_create,
+                  :name => @schema.table,
+                  :flags => "TABLE_PAT_KEY",
+                  :key_type => "ShortText")
         end
 
         def sync_columns
@@ -49,25 +48,24 @@ module Groonga
 
         def sync_column(column, current_column)
           if current_column.nil?
-            Client.open do |client|
-              flags = []
-              if column.vector?
-                flags << "COLUMN_VECTOR"
-              else
-                flags << "COLUMN_SCALAR"
-              end
-              if column.reference?
-                reference_table_name = generate_reference_table_name(column)
-                sync_reference_table(column, reference_table_name)
-                type = reference_table_name
-              else
-                type = column.type
-              end
-              client.column_create(:table => @schema.table,
-                                   :name => column.name,
-                                   :type => type,
-                                   :flags => flags.join("|"))
+            flags = []
+            if column.vector?
+              flags << "COLUMN_VECTOR"
+            else
+              flags << "COLUMN_SCALAR"
             end
+            if column.reference?
+              reference_table_name = generate_reference_table_name(column)
+              sync_reference_table(column, reference_table_name)
+              type = reference_table_name
+            else
+              type = column.type
+            end
+            execute(:column_create,
+                    :table => @schema.table,
+                    :name => column.name,
+                    :type => type,
+                    :flags => flags.join("|"))
           end
 
           sync_column_index(column, current_column)
@@ -84,9 +82,7 @@ module Groonga
           if column.text_family_type?
             parameters[:normalizer] = "NormalizerAuto"
           end
-          Client.open do |client|
-            client.table_create(parameters)
-          end
+          execute(:table_create, parameters)
         end
 
         def sync_column_index(column, current_column)
@@ -127,30 +123,26 @@ module Groonga
               parameters[:normalizer] = "NormalizerAuto"
             end
           end
-          Client.open do |client|
-            client.table_create(parameters)
-          end
+          execute(:table_create, parameters)
         end
 
         def create_index_column(column, lexicon_name, index_column_name)
           flags = "COLUMN_INDEX"
           flags += "|WITH_POSITION" if column.have_full_text_search_index?
-          Client.open do |client|
-            client.column_create(:table => lexicon_name,
-                                 :name => index_column_name,
-                                 :flags => flags,
-                                 :type => @schema.table,
-                                 :source => column.name)
-          end
+          execute(:column_create,
+                  :table => lexicon_name,
+                  :name => index_column_name,
+                  :flags => flags,
+                  :type => @schema.table,
+                  :source => column.name)
         end
 
         def remove_indexes(current_column)
           return if current_column.nil?
           current_column.indexes.each do |index|
-            Client.open do |client|
-              clinet.column_remove(:table => index.table.name,
-                                   :name => index.name)
-            end
+            execute(:column_remove,
+                    :table => index.table.name,
+                    :name => index.name)
           end
         end
 
@@ -164,6 +156,16 @@ module Groonga
             {}
           else
             current_table.columns
+          end
+        end
+
+        def execute(name, parameters)
+          Client.open do |client|
+            response = client.execute(name, parameters)
+            unless response.success?
+              raise Client::Request::ErrorResponse.new(response)
+            end
+            response
           end
         end
 
