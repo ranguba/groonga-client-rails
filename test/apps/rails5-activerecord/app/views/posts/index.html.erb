@@ -2,7 +2,7 @@
 
 <h1>Posts</h1>
 
-<p><%= @result_set.n_hits %> records</p>
+<p><%= page_entries_info(@result_set, entry_name: "Posts") %></p>
 
 <%= form_tag(posts_path, method: "get") do %>
   <%= search_field_tag "query", params["query"] %>
@@ -39,5 +39,7 @@
 </table>
 
 <br>
+
+<%= paginate(@result_set) %>
 
 <%= link_to 'New Post', new_post_path %>

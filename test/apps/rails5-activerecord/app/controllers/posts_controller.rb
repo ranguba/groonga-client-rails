@@ -16,8 +16,6 @@ class PostsController < ApplicationController
     search = search.
       output_columns([
                        "_key",
-                       "_score",
-                       "*",
                        "highlight_html(title)",
                        "snippet_html(body)",
                      ]).
