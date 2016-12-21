@@ -73,6 +73,10 @@ module Groonga
             @options[:vector]
           end
 
+          def reference?
+            @options[:reference]
+          end
+
           def have_index?
             @options[:index]
           end

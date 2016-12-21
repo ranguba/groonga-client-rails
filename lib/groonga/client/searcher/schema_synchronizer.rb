@@ -56,9 +56,16 @@ module Groonga
               else
                 flags << "COLUMN_SCALAR"
               end
+              if column.reference?
+                reference_table_name = generate_reference_table_name(column)
+                sync_reference_table(column, reference_table_name)
+                type = reference_table_name
+              else
+                type = column.type
+              end
               client.column_create(:table => @schema.table,
                                    :name => column.name,
-                                   :type => column.type,
+                                   :type => type,
                                    :flags => flags.join("|"))
             end
           end
@@ -66,9 +73,25 @@ module Groonga
           sync_column_index(column, current_column)
         end
 
+        def sync_reference_table(column, reference_table_name)
+          return if @current_schema.tables[reference_table_name]
+
+          parameters = {
+            :name => reference_table_name,
+            :flags => "TABLE_PAT_KEY",
+          }
+          parameters[:key_type] = column.type
+          if column.text_family_type?
+            parameters[:normalizer] = "NormalizerAuto"
+          end
+          Client.open do |client|
+            client.table_create(parameters)
+          end
+        end
+
         def sync_column_index(column, current_column)
           if column.have_index?
-            lexicon_name = "lexicon_#{@schema.table}_#{column.name}"
+            lexicon_name = generate_lexicon_name(column)
             index_column_name = "index"
             if current_column
               indexes = current_column.indexes
@@ -96,6 +119,8 @@ module Groonga
             parameters[:key_type] = "ShortText"
             parameters[:default_tokenizer] = "TokenBigram"
             parameters[:normalizer] = "NormalizerAuto"
+          elsif column.reference?
+            parameters[:key_type] = generate_reference_table_name(column)
           else
             parameters[:key_type] = column.type
             if column.text_family_type?
@@ -140,6 +165,14 @@ module Groonga
           else
             current_table.columns
           end
+        end
+
+        def generate_reference_table_name(column)
+          "reference_#{@schema.table}_#{column.name}"
+        end
+
+        def generate_lexicon_name(column)
+          "lexicon_#{@schema.table}_#{column.name}"
         end
       end
     end
