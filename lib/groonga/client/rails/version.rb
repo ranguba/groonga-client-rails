@@ -17,7 +17,7 @@
 module Groonga
   class Client
     module Rails
-      VERSION = "0.9.5"
+      VERSION = "0.9.6"
     end
   end
 end
