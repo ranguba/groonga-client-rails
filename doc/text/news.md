@@ -1,5 +1,14 @@
 # NEWS
 
+## 0.9.5 - 2016-12-21
+
+### Improvements
+
+  * Required groonga-client 0.3.8 or later.
+
+  * Deprecated `Searcher.search.result_set`. Use
+    `Searcher.search.response` instead.
+
 ## 0.9.4 - 2016-06-09
 
 ### Improvements
