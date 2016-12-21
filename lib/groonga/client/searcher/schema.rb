@@ -60,6 +60,15 @@ module Groonga
             @options[:type] || "Text"
           end
 
+          def text_family_type?
+            case type
+            when "ShortText", "Text", "LongText"
+              true
+            else
+              false
+            end
+          end
+
           def vector?
             @options[:vector]
           end

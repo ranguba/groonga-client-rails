@@ -98,6 +98,9 @@ module Groonga
             parameters[:normalizer] = "NormalizerAuto"
           else
             parameters[:key_type] = column.type
+            if column.text_family_type?
+              parameters[:normalizer] = "NormalizerAuto"
+            end
           end
           Client.open do |client|
             client.table_create(parameters)

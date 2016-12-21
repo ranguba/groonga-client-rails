@@ -149,6 +149,8 @@ module Groonga
         schema.columns.each do |name, column|
           if column.have_full_text_search_index?
             full_text_searchable_column_names << name
+          elsif column.have_index? and column.vector?
+            full_text_searchable_column_names << name
           end
         end
         extensions = [SelectRequest]
