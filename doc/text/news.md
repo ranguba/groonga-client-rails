@@ -1,5 +1,15 @@
 # NEWS
 
+## 0.9.7 - 2016-12-22
+
+### Improvements
+
+  * Supported reference column.
+
+  * Added response error checks on synchronization.
+
+  * Supported disabling normalizer.
+
 ## 0.9.6 - 2016-12-21
 
 ### Improvements
