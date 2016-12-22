@@ -87,7 +87,11 @@ module Groonga
 
         def sync_column_index(column, current_column)
           if column.have_index?
-            lexicon_name = generate_lexicon_name(column)
+            if column.reference?
+              lexicon_name = generate_reference_table_name(column)
+            else
+              lexicon_name = generate_lexicon_name(column)
+            end
             index_column_name = "index"
             if current_column
               indexes = current_column.indexes
@@ -97,7 +101,7 @@ module Groonga
             indexes.each do |index|
               return if index.full_name == "#{lexicon_name}.#{index_column_name}"
             end
-            sync_lexicon(column, lexicon_name)
+            sync_lexicon(column, lexicon_name) unless column.reference?
             create_index_column(column, lexicon_name, index_column_name)
           else
             remove_indexes(current_column)
